@@ -1,15 +1,27 @@
 import Image from 'next/image';
 import { MapPin, Clock, Phone, Mail, ExternalLink, ArrowRight } from 'lucide-react';
 import type { ContactCtaDocument } from '@/types';
+import type { ContactPageData } from '@/features/contact/types';
+import { getMapEmbedUrl } from '@/features/contact/lib/maps';
 
 /**
  * ContactCTA – Premium Luxury Contact Section.
  * Features a deep dark forest green atmosphere with a heavily blurred grove image background,
  * radial lighting, stacked dark glass information cards, and an embedded live Google Map.
  */
-interface Props { data: ContactCtaDocument; }
+interface Props {
+  data: ContactCtaDocument;
+  contactPageData?: ContactPageData;
+}
 
-export function ContactCTA({ data }: Props) {
+export function ContactCTA({ data, contactPageData }: Props) {
+  const locationTitle = contactPageData?.cards.location.title || 'Hydrops';
+  const locationAddress = contactPageData?.cards.location.address;
+  const googleMapsUrl = contactPageData?.cards.location.googleMapsUrl;
+  const embedUrl = getMapEmbedUrl(locationAddress, contactPageData?.map.mapEmbedUrl);
+  const phoneNumber = contactPageData?.cards.phone.phoneNumbers?.[0] || '+91 70121 23505';
+  const workingHours = contactPageData?.cards.businessHours.workingHours;
+
   const whatsappUrl = `https://wa.me/917012123505?text=${encodeURIComponent(
     'Hello Hydrops Team, I would like to inquire about your crystal clear coconut oil.'
   )}`;
@@ -85,26 +97,30 @@ export function ContactCTA({ data }: Props) {
                 <div className="w-10 h-10 rounded-full border border-white/15 bg-white/5 flex items-center justify-center mb-5 text-[#C8A96A]">
                   <MapPin className="w-5 h-5" />
                 </div>
-                <h3 className="text-2xl font-serif font-light text-[#FAF8F5] mb-2 tracking-tight">Hydrops</h3>
-                <p className="text-sm font-light text-white/70 leading-relaxed mb-6">
-                  Kadungalloor, Aluva, Ernakulam, Kerala 683110, India
-                </p>
+                <h3 className="text-2xl font-serif font-light text-[#FAF8F5] mb-2 tracking-tight">{locationTitle}</h3>
+                {locationAddress && (
+                  <p className="text-sm font-light text-white/70 leading-relaxed mb-6">
+                    {locationAddress}
+                  </p>
+                )}
               </div>
 
-              <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-                <span className="text-[10px] font-mono tracking-[0.25em] text-white/40 uppercase">
-                  {"10°03'38.6\"N 76°19'34.7\"E"}
-                </span>
-                <a
-                  href="https://maps.app.goo.gl/LykpGeLBQjAHpcVd8"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-xs font-mono tracking-[0.25em] uppercase text-[#C8A96A] hover:text-white transition-colors gap-2"
-                >
-                  <span>NAVIGATE</span>
-                  <ExternalLink className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
-                </a>
-              </div>
+              {googleMapsUrl && (
+                <div className="pt-4 border-t border-white/10 flex items-center justify-between">
+                  <span className="text-[10px] font-mono tracking-[0.25em] text-white/40 uppercase">
+                    LOCATION
+                  </span>
+                  <a
+                    href={googleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-xs font-mono tracking-[0.25em] uppercase text-[#C8A96A] hover:text-white transition-colors gap-2"
+                  >
+                    <span>NAVIGATE</span>
+                    <ExternalLink className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+                  </a>
+                </div>
+              )}
             </div>
 
             {/* Row with Business Hours (Card 2) and Phone (Card 3) */}
@@ -116,7 +132,7 @@ export function ContactCTA({ data }: Props) {
                 </div>
                 <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40 mb-1 block">HOURS</span>
                 <p className="text-base font-serif font-light text-[#FAF8F5]">Mon – Sat</p>
-                <p className="text-sm font-light text-[#C8A96A]">08:00 — 19:00</p>
+                <p className="text-sm font-light text-[#C8A96A]">{workingHours || '08:00 — 19:00'}</p>
               </div>
 
               {/* Card 3: Phone */}
@@ -125,8 +141,8 @@ export function ContactCTA({ data }: Props) {
                   <Phone className="w-5 h-5" />
                 </div>
                 <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/40 mb-1 block">CALL US</span>
-                <a href="tel:+917012123505" className="text-base font-light text-[#FAF8F5] hover:text-[#C8A96A] transition-colors block">
-                  +91 70121 23505
+                <a href={`tel:${phoneNumber.replace(/[^0-9+]/g, '')}`} className="text-base font-light text-[#FAF8F5] hover:text-[#C8A96A] transition-colors block">
+                  {phoneNumber}
                 </a>
               </div>
             </div>
@@ -149,17 +165,26 @@ export function ContactCTA({ data }: Props) {
 
           {/* Right Column (~58%): Embedded Google Map */}
           <div className="cta-map-column w-full lg:w-[58%] min-h-[460px] lg:min-h-[540px] rounded-[2.2rem] overflow-hidden shadow-[0_25px_50px_rgba(0,0,0,0.4)] border border-white/15 relative opacity-0">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.4682057814896!2d76.3262963!3d10.0607144!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080b0000000001%3A0x0!2zMTDCsDAzJzM4LjYiTiA3NsKwMTknMzQuNyJF!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
-              width="100%"
-              height="100%"
-              style={{ border: 0, minHeight: '460px' }}
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Hydrops Location Map"
-              className="w-full h-full rounded-[2.2rem]"
-            />
+            {embedUrl ? (
+              <iframe
+                src={embedUrl}
+                width="100%"
+                height="100%"
+                style={{ border: 0, minHeight: '460px' }}
+                allowFullScreen={false}
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title={`${locationTitle} Location Map`}
+                className="w-full h-full rounded-[2.2rem]"
+              />
+            ) : (
+              <div className="w-full h-full min-h-[460px] flex flex-col items-center justify-center text-center p-8 bg-[#111C14]/50">
+                <MapPin className="w-12 h-12 text-[#C8A96A] mb-4 opacity-50" />
+                <p className="text-sm font-light text-white/60 max-w-sm">
+                  {locationAddress || 'Map location will appear here.'}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -171,3 +196,4 @@ export function ContactCTA({ data }: Props) {
     </section>
   );
 }
+

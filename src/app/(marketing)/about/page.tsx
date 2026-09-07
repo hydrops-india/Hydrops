@@ -16,7 +16,7 @@ import {
   CompanyInfo
 } from '@/features/about';
 import { AboutAnimationWrapper } from './AboutClient';
-import { getAboutPage } from '@/lib/sanity/fetch';
+import { getAboutPage, getContactPage } from '@/lib/sanity/fetch';
 
 export const metadata: Metadata = {
   title: aboutSeo.title,
@@ -47,7 +47,10 @@ export const metadata: Metadata = {
 };
 
 export default async function AboutPage() {
-  const aboutData = await getAboutPage();
+  const [aboutData, contactPageData] = await Promise.all([
+    getAboutPage(),
+    getContactPage(),
+  ]);
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', item: '/' },
@@ -75,7 +78,7 @@ export default async function AboutPage() {
         <ManufacturingPhilosophy data={aboutData.manufacturing} />
         <QualityCommitment data={aboutData.quality} />
         <WhyChooseHydrops data={aboutData.whyChoose} />
-        <CompanyInfo data={aboutData.companyInfo} />
+        <CompanyInfo data={aboutData.companyInfo} contactPageData={contactPageData} />
       </AboutAnimationWrapper>
 
       <Footer />

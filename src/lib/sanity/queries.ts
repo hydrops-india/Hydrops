@@ -165,7 +165,7 @@ export const ABOUT_PAGE_QUERY = `{
   }
 }`;
 
-export const CONTACT_PAGE_QUERY = `*[_type == "contactPage"][0] {
+export const CONTACT_PAGE_QUERY = `*[_type == "contactPage" && _id == "contact-page"][0] {
   eyebrow,
   heading,
   highlightedWord,

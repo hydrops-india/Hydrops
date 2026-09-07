@@ -102,7 +102,7 @@ export default async function ContactPage() {
         <ContactForm data={contactData.formContent} />
 
         {/* 04 · Live Google Map Section */}
-        <ContactMap data={contactData.map} />
+        <ContactMap data={contactData.map} location={contactData.cards.location} />
 
         {/* 05 · Quick Action CTA Section */}
         <ContactCTASection data={contactData.cta} />

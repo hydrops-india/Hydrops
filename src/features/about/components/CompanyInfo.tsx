@@ -1,15 +1,24 @@
 import type { CompanyInfoData } from '@/features/about/types';
+import type { ContactPageData } from '@/features/contact/types';
+import { getMapEmbedUrl } from '@/features/contact/lib/maps';
 
 interface Props {
   data: CompanyInfoData;
+  contactPageData?: ContactPageData;
 }
 
 /**
  * CompanyInfo — premium editorial layout with location card, business hours,
  * certifications, and dual CTA buttons. Final section of the About page.
  */
-export function CompanyInfo({ data }: Props) {
-  const addressLines = [data.address.line1, data.address.line2, data.address.line3].filter(Boolean);
+export function CompanyInfo({ data, contactPageData }: Props) {
+  const canonicalAddress = contactPageData?.cards.location.address;
+  const canonicalGoogleMapsUrl = contactPageData?.cards.location.googleMapsUrl;
+  const embedUrl = getMapEmbedUrl(canonicalAddress, contactPageData?.map.mapEmbedUrl);
+
+  const addressLines = canonicalAddress
+    ? [canonicalAddress]
+    : [data.address.line1, data.address.line2, data.address.line3].filter(Boolean);
 
   return (
     <section
@@ -108,14 +117,14 @@ export function CompanyInfo({ data }: Props) {
             }}
           >
             {/* Map placeholder / embed wrapper */}
-            {data.mapUrl && (
+            {embedUrl && (
               <div
                 className="w-full overflow-hidden"
                 style={{ aspectRatio: '16/7' }}
                 aria-label="Location map"
               >
                 <iframe
-                  src={data.mapUrl}
+                  src={embedUrl}
                   title="Hydrops India location"
                   width="100%"
                   height="100%"
@@ -128,12 +137,24 @@ export function CompanyInfo({ data }: Props) {
 
             {/* Address */}
             <div className="flex flex-col gap-2">
-              <p
-                className="text-[#C8A96A] font-medium uppercase mb-2"
-                style={{ fontSize: '10px', letterSpacing: '0.35em' }}
-              >
-                Address
-              </p>
+              <div className="flex items-center justify-between">
+                <p
+                  className="text-[#C8A96A] font-medium uppercase mb-2"
+                  style={{ fontSize: '10px', letterSpacing: '0.35em' }}
+                >
+                  Address
+                </p>
+                {canonicalGoogleMapsUrl && (
+                  <a
+                    href={canonicalGoogleMapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-mono tracking-[0.15em] text-[#C8A96A] hover:text-white uppercase transition-colors"
+                  >
+                    View on Map →
+                  </a>
+                )}
+              </div>
               {addressLines.map((line, i) => (
                 <p
                   key={i}
