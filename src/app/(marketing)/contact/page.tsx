@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Navbar } from '@/components/layout/Navbar';
 import { navigationData } from '@/data/site/navigation';
 import { Footer } from '@/components/layout/Footer';
-import { getContactPage } from '@/lib/sanity/fetch';
+import { getContactPage, getWhatsAppConfig } from '@/lib/sanity/fetch';
 import { generateBreadcrumbSchema } from '@/lib/schema/breadcrumb';
 import { companyData } from '@/data/site/company';
 import {
@@ -48,7 +48,10 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const contactData = await getContactPage();
+  const [contactData, whatsappConfig] = await Promise.all([
+    getContactPage(),
+    getWhatsAppConfig(),
+  ]);
 
   const breadcrumbSchema = generateBreadcrumbSchema([
     { name: 'Home', item: '/' },
@@ -96,7 +99,7 @@ export default async function ContactPage() {
         <ContactHero data={contactData.hero} />
 
         {/* 02 · Contact Cards Section */}
-        <ContactCards data={contactData.cards} />
+        <ContactCards data={contactData.cards} whatsappConfig={whatsappConfig} />
 
         {/* 03 · Contact Form Section */}
         <ContactForm data={contactData.formContent} />
@@ -105,7 +108,7 @@ export default async function ContactPage() {
         <ContactMap data={contactData.map} location={contactData.cards.location} />
 
         {/* 05 · Quick Action CTA Section */}
-        <ContactCTASection data={contactData.cta} />
+        <ContactCTASection data={contactData.cta} whatsappConfig={whatsappConfig} />
       </main>
       <Footer />
     </>

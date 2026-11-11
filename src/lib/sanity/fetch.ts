@@ -1,18 +1,34 @@
+import { cache } from 'react';
 import { client } from './client';
 import { HOME_PAGE_QUERY, ABOUT_PAGE_QUERY, CONTACT_PAGE_QUERY, GLOBAL_WHATSAPP_QUERY } from './queries';
+import {
+  DEFAULT_WHATSAPP_CONFIG,
+  DEFAULT_WHATSAPP_MESSAGE,
+  DEFAULT_WHATSAPP_NUMBER,
+  normalizeWhatsAppNumber,
+  type WhatsAppConfig,
+} from '@/lib/whatsapp';
 
-export async function getGlobalWhatsAppNumber(): Promise<string | null> {
+/**
+ * Global WhatsApp config (number + pre-filled message) from the `contact` singleton.
+ * Wrapped in React `cache` so every component in a request shares one fetch.
+ */
+export const getWhatsAppConfig = cache(async (): Promise<WhatsAppConfig> => {
   try {
-    const rawNumber = await client.fetch<string | null>(GLOBAL_WHATSAPP_QUERY, {}, { next: { revalidate: 60 } });
-    if (rawNumber && rawNumber.trim().length > 0) {
-      return rawNumber.trim();
-    }
-    return '+917012123505';
+    const raw = await client.fetch<{ number: string | null; message: string | null } | null>(
+      GLOBAL_WHATSAPP_QUERY,
+      {},
+      { next: { revalidate: 60 } }
+    );
+    return {
+      number: normalizeWhatsAppNumber(raw?.number) ?? DEFAULT_WHATSAPP_NUMBER,
+      message: raw?.message?.trim() || DEFAULT_WHATSAPP_MESSAGE,
+    };
   } catch (error) {
-    console.error('Failed to fetch global WhatsApp number from Sanity:', error);
-    return '+917012123505';
+    console.error('Failed to fetch global WhatsApp config from Sanity:', error);
+    return DEFAULT_WHATSAPP_CONFIG;
   }
-}
+});
 
 import { mapSanityHomeToFrontend, mapSanityAboutToFrontend, mapSanityContactToFrontend } from './adapters';
 import { homePageData as fallbackHomePageData } from '@/data/home/home';

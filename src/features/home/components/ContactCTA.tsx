@@ -3,6 +3,7 @@ import { MapPin, Clock, Phone, Mail, ExternalLink, ArrowRight } from 'lucide-rea
 import type { ContactCtaDocument } from '@/types';
 import type { ContactPageData } from '@/features/contact/types';
 import { getMapEmbedUrl } from '@/features/contact/lib/maps';
+import { buildWhatsAppUrl, type WhatsAppConfig } from '@/lib/whatsapp';
 
 /**
  * ContactCTA – Premium Luxury Contact Section.
@@ -12,9 +13,10 @@ import { getMapEmbedUrl } from '@/features/contact/lib/maps';
 interface Props {
   data: ContactCtaDocument;
   contactPageData?: ContactPageData;
+  whatsappConfig: WhatsAppConfig;
 }
 
-export function ContactCTA({ data, contactPageData }: Props) {
+export function ContactCTA({ data, contactPageData, whatsappConfig }: Props) {
   const locationTitle = contactPageData?.cards.location.title || 'Hydrops';
   const locationAddress = contactPageData?.cards.location.address;
   const googleMapsUrl = contactPageData?.cards.location.googleMapsUrl;
@@ -22,9 +24,7 @@ export function ContactCTA({ data, contactPageData }: Props) {
   const phoneNumber = contactPageData?.cards.phone.phoneNumbers?.[0] || '+91 70121 23505';
   const workingHours = contactPageData?.cards.businessHours.workingHours;
 
-  const whatsappUrl = `https://wa.me/917012123505?text=${encodeURIComponent(
-    'Hello Hydrops Team, I would like to inquire about your crystal clear coconut oil.'
-  )}`;
+  const whatsappUrl = buildWhatsAppUrl(whatsappConfig);
 
   return (
     <section

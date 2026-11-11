@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { cormorant, dmSans } from "@/lib/fonts";
 import { ThemeProvider } from "@/providers/ThemeProvider";
-import { getGlobalWhatsAppNumber } from "@/lib/sanity/fetch";
+import { getWhatsAppConfig } from "@/lib/sanity/fetch";
+import { WhatsAppConfigProvider } from "@/components/global/WhatsAppConfigProvider";
 import { FloatingWhatsAppButton } from "@/components/global/FloatingWhatsAppButton";
 import { generateOrganizationSchema } from "@/lib/schema/organization";
 import { generateWebsiteSchema } from "@/lib/schema/website";
@@ -70,7 +71,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const whatsappNumber = await getGlobalWhatsAppNumber();
+  const whatsappConfig = await getWhatsAppConfig();
   const orgSchema = generateOrganizationSchema();
   const siteSchema = generateWebsiteSchema();
 
@@ -88,8 +89,10 @@ export default async function RootLayout({
       </head>
       <body className="antialiased min-h-screen flex flex-col" suppressHydrationWarning>
         <ThemeProvider>
-          {children}
-          <FloatingWhatsAppButton whatsappNumber={whatsappNumber} />
+          <WhatsAppConfigProvider value={whatsappConfig}>
+            {children}
+            <FloatingWhatsAppButton config={whatsappConfig} />
+          </WhatsAppConfigProvider>
         </ThemeProvider>
       </body>
     </html>

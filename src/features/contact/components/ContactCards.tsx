@@ -1,14 +1,18 @@
 import { Phone, MessageSquare, MapPin, Clock, ExternalLink } from 'lucide-react';
 import type { ContactCardsData } from '../types';
+import { buildWhatsAppUrl, normalizeWhatsAppNumber, type WhatsAppConfig } from '@/lib/whatsapp';
 
 interface Props {
   data: ContactCardsData;
+  whatsappConfig: WhatsAppConfig;
 }
 
-export function ContactCards({ data }: Props) {
-  const whatsappUrl = `https://wa.me/${data.whatsapp.whatsappNumber.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(
-    'Hello Hydrops Team, I would like to inquire about your products.'
-  )}`;
+export function ContactCards({ data, whatsappConfig }: Props) {
+  // Card keeps its own CMS number if set; the message always comes from the global field.
+  const whatsappUrl = buildWhatsAppUrl({
+    number: normalizeWhatsAppNumber(data.whatsapp.whatsappNumber) ?? whatsappConfig.number,
+    message: whatsappConfig.message,
+  });
 
   return (
     <section className="w-full max-w-7xl mx-auto px-6 sm:px-10 lg:px-12 py-12">

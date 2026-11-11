@@ -1,11 +1,13 @@
 import { Phone, MessageSquare, Mail, ArrowUpRight } from 'lucide-react';
 import type { ContactCtaSectionData, ContactCtaButton } from '../types';
+import { withWhatsAppMessage, type WhatsAppConfig } from '@/lib/whatsapp';
 
 interface Props {
   data: ContactCtaSectionData;
+  whatsappConfig: WhatsAppConfig;
 }
 
-export function ContactCTASection({ data }: Props) {
+export function ContactCTASection({ data, whatsappConfig }: Props) {
   const getIcon = (type: ContactCtaButton['type']) => {
     switch (type) {
       case 'call':
@@ -52,7 +54,7 @@ export function ContactCTASection({ data }: Props) {
           {data.buttons.map((button, idx) => (
             <a
               key={idx}
-              href={button.url}
+              href={withWhatsAppMessage(button.url, whatsappConfig.message)}
               target={button.url.startsWith('http') ? '_blank' : undefined}
               rel={button.url.startsWith('http') ? 'noopener noreferrer' : undefined}
               className={`inline-flex items-center justify-center rounded-full px-8 py-4 text-xs font-medium tracking-[0.15em] uppercase shadow-md transition-all duration-300 hover:scale-105 ${getButtonStyle(

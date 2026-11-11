@@ -5,6 +5,8 @@ import { companyData } from '@/data/site/company';
 import { footerData } from '@/data/site/footer';
 import { socialData } from '@/data/site/social';
 import type { FooterDocument, SocialLinkDocument } from '@/types';
+import { buildWhatsAppUrl } from '@/lib/whatsapp';
+import { useWhatsAppConfig } from '@/components/global/WhatsAppConfigProvider';
 
 // ─── Design tokens (local constants so the component is self-contained) ────────
 const GOLD = 'rgba(200,169,106,1)';
@@ -262,7 +264,7 @@ function FooterContactColumn({
 }: Pick<FooterDocument, 'contact' | 'address'>) {
   const emailDisplay = contact.email ?? footerData.labels.emailUnavailable;
   const emailHref = contact.email ? `mailto:${contact.email}` : undefined;
-
+  const whatsappConfig = useWhatsAppConfig();
 
   return (
     <div className="flex flex-col gap-4">
@@ -282,7 +284,7 @@ function FooterContactColumn({
       <ContactRow
         icon={<WhatsAppIcon />}
         label={`WhatsApp · ${contact.whatsapp}`}
-        href={`https://wa.me/91${contact.whatsapp}`}
+        href={buildWhatsAppUrl(whatsappConfig)}
         isExternal
       />
       <ContactRow

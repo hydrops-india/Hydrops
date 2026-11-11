@@ -1,17 +1,20 @@
 import type { CompanyInfoData } from '@/features/about/types';
 import type { ContactPageData } from '@/features/contact/types';
 import { getMapEmbedUrl } from '@/features/contact/lib/maps';
+import { withWhatsAppMessage, type WhatsAppConfig } from '@/lib/whatsapp';
 
 interface Props {
   data: CompanyInfoData;
   contactPageData?: ContactPageData;
+  whatsappConfig: WhatsAppConfig;
 }
 
 /**
  * CompanyInfo — premium editorial layout with location card, business hours,
  * certifications, and dual CTA buttons. Final section of the About page.
  */
-export function CompanyInfo({ data, contactPageData }: Props) {
+export function CompanyInfo({ data, contactPageData, whatsappConfig }: Props) {
+  const secondaryHref = withWhatsAppMessage(data.secondaryCta.href, whatsappConfig.message);
   const canonicalAddress = contactPageData?.cards.location.address;
   const canonicalGoogleMapsUrl = contactPageData?.cards.location.googleMapsUrl;
   const embedUrl = getMapEmbedUrl(canonicalAddress, contactPageData?.map.mapEmbedUrl);
@@ -81,9 +84,9 @@ export function CompanyInfo({ data, contactPageData }: Props) {
                 {data.primaryCta.label}
               </a>
               <a
-                href={data.secondaryCta.href}
-                target={data.secondaryCta.href.startsWith('http') ? '_blank' : undefined}
-                rel={data.secondaryCta.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                href={secondaryHref}
+                target={secondaryHref.startsWith('http') ? '_blank' : undefined}
+                rel={secondaryHref.startsWith('http') ? 'noopener noreferrer' : undefined}
                 className="inline-flex items-center justify-center px-8 py-4 font-medium border transition-colors hover:border-[#C8A96A] hover:text-[#C8A96A]"
                 style={{
                   fontSize: '13px',

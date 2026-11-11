@@ -11,7 +11,7 @@ import { ContactCTA } from '@/features/home/components/ContactCTA';
 import { Navbar } from '@/components/layout/Navbar';
 import { navigationData } from '@/data/site/navigation';
 import { Footer } from '@/components/layout/Footer';
-import { getHomePage, getContactPage } from '@/lib/sanity/fetch';
+import { getHomePage, getContactPage, getWhatsAppConfig } from '@/lib/sanity/fetch';
 import { HomeAnimationWrapper } from './HomeClient';
 import { siteSeo } from '@/data/site/seo';
 
@@ -45,9 +45,10 @@ export const metadata: Metadata = {
 
 
 export default async function HomePage() {
-  const [homePageData, contactPageData] = await Promise.all([
+  const [homePageData, contactPageData, whatsappConfig] = await Promise.all([
     getHomePage(),
     getContactPage(),
+    getWhatsAppConfig(),
   ]);
 
   return (
@@ -109,7 +110,11 @@ export default async function HomePage() {
         <Everyday data={homePageData.everyday} />
 
         {/* 09 · Closing — The brand arrives */}
-        <ContactCTA data={homePageData.contactCta} contactPageData={contactPageData} />
+        <ContactCTA
+          data={homePageData.contactCta}
+          contactPageData={contactPageData}
+          whatsappConfig={whatsappConfig}
+        />
       </HomeAnimationWrapper>
       <Footer />
     </>

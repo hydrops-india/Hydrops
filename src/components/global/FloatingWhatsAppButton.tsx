@@ -1,22 +1,15 @@
-import React from 'react';
+import { buildWhatsAppUrl, type WhatsAppConfig } from '@/lib/whatsapp';
 
 interface FloatingWhatsAppButtonProps {
-  whatsappNumber?: string | null;
+  config: WhatsAppConfig;
 }
 
-export function FloatingWhatsAppButton({ whatsappNumber }: FloatingWhatsAppButtonProps) {
-  if (!whatsappNumber || whatsappNumber.trim().length === 0) {
+export function FloatingWhatsAppButton({ config }: FloatingWhatsAppButtonProps) {
+  if (!config.number) {
     return null;
   }
 
-  const cleanedNumber = whatsappNumber.replace(/[^0-9]/g, '');
-
-  if (!cleanedNumber) {
-    return null;
-  }
-
-  const defaultMessage = `Hello Hydrops,\n\nI would like to know more about your Colorless Crystal Clear Coconut Oil.`;
-  const whatsappUrl = `https://wa.me/${cleanedNumber}?text=${encodeURIComponent(defaultMessage)}`;
+  const whatsappUrl = buildWhatsAppUrl(config);
 
   return (
     <div className="fixed right-6 bottom-[calc(1.5rem+env(safe-area-inset-bottom))] z-50 flex items-center justify-center pointer-events-none">
